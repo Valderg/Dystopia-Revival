@@ -1,4 +1,4 @@
-package js.game.etc.src.renderEngine;
+package js.game.etc.src.models;
 
 public class RawModel {
 

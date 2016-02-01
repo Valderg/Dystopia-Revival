@@ -2,11 +2,13 @@ package js.game.etc.src.engineTester;
 
 import org.lwjgl.opengl.Display;
 
+import js.game.etc.src.models.RawModel;
+import js.game.etc.src.models.TexturedModel;
 import js.game.etc.src.renderEngine.DisplayManager;
 import js.game.etc.src.renderEngine.Loader;
-import js.game.etc.src.renderEngine.RawModel;
 import js.game.etc.src.renderEngine.Renderer;
 import js.game.etc.src.shaders.StaticShader;
+import js.game.etc.src.textures.ModelTexture;
 
 public class MainGameLoop {
 
@@ -30,12 +32,23 @@ public class MainGameLoop {
 				3, 1, 2,	//Bottom right triangle
 		};
 		
-		RawModel model = loader.loadToVAO(vertices, indices);
+		float[] textureCoords = {
+			0,0,
+			0,1,
+			1,1,
+			1,0
+				
+				
+		};
+		
+		RawModel model = loader.loadToVAO(vertices, textureCoords, indices);
+		ModelTexture texture = new ModelTexture(loader.loadTexture("punisher"));
+		TexturedModel texturedModel = new TexturedModel(model,texture);
 		
 		while(!Display.isCloseRequested()){
 			renderer.prepare();
 			shader.start();
-			renderer.render(model);
+			renderer.render(texturedModel);
 			shader.stop();
 			DisplayManager.updateDisplay();
 		}
