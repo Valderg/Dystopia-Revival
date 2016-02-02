@@ -12,6 +12,8 @@ import js.game.etc.src.entities.Entity;
 import js.game.etc.src.entities.Light;
 import js.game.etc.src.models.RawModel;
 import js.game.etc.src.models.TexturedModel;
+import js.game.etc.src.objConverter.ModelData;
+import js.game.etc.src.objConverter.OBJFileLoader;
 import js.game.etc.src.renderEngine.DisplayManager;
 import js.game.etc.src.renderEngine.Loader;
 import js.game.etc.src.renderEngine.MasterRenderer;
@@ -28,25 +30,43 @@ public class MainGameLoop {
 
 		MasterRenderer renderer = new MasterRenderer();
 
-		RawModel model = OBJLoader.loadObjModel("tree", loader);
+		//TREE
+		ModelData data = OBJFileLoader.loadOBJ("tree");
 
-		TexturedModel staticModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("tree")));
+		RawModel treeModel = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
+		
+		TexturedModel staticModel = new TexturedModel(treeModel, new ModelTexture(loader.loadTexture("tree")));
+		
+		//GRASS
 		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),
 				new ModelTexture(loader.loadTexture("grassTexture")));
 		grass.getTexture().setHasTransparency(true);
 		grass.getTexture().setUseFakeLighting(true);
+		
+		//FERN
 		TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader),
 				new ModelTexture(loader.loadTexture("fern")));
 		fern.getTexture().setHasTransparency(true);
+		
+		//LOW POLY TREE
+		TexturedModel lowPolyTree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader),
+				new ModelTexture(loader.loadTexture("lowPolyTree")));
+		
+		
 		// ModelTexture texture = staticModel.getTexture();
 		// texture.setShineDamper(10);
 		// texture.setReflectivity(1);
 
 		List<Entity> entities = new ArrayList<Entity>();
 		Random random = new Random();
-		for (int i = 0; i < 500; i++) {
+		for (int i = 0; i < 400; i++) {
 			entities.add(new Entity(staticModel,
 					new Vector3f(random.nextFloat() * 800 - 400, 0, random.nextFloat() * -600), 0, 0, 0, 3));
+			entities.add(new Entity(lowPolyTree,
+					new Vector3f(random.nextFloat() * 800 - 400, 0, random.nextFloat() * -600), 0, 0, 0, 0.4f));
+			
+		}
+		for(int i = 0; i < 600; i++){
 			entities.add(new Entity(grass, new Vector3f(random.nextFloat() * 800 - 400, 0, random.nextFloat() * -600),
 					0, 0, 0, 1));
 			entities.add(new Entity(fern, new Vector3f(random.nextFloat() * 800 - 400, 0, random.nextFloat() * -600), 0,
