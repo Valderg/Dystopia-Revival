@@ -90,9 +90,6 @@ public class Camera {
 			player.increaseRotation(0, -rotationChange, 0);
 			float pitchChange = Mouse.getDY() * 0.1f;
 			pitch -= pitchChange;
-//			pitch -= pitchChange;
-			
-			
 		} 
 		
 	}
