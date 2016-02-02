@@ -33,8 +33,11 @@ public class MainGameLoop {
 		TexturedModel staticModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("tree")));
 		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),
 				new ModelTexture(loader.loadTexture("grassTexture")));
+		grass.getTexture().setHasTransparency(true);
+		grass.getTexture().setUseFakeLighting(true);
 		TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader),
 				new ModelTexture(loader.loadTexture("fern")));
+		fern.getTexture().setHasTransparency(true);
 		// ModelTexture texture = staticModel.getTexture();
 		// texture.setShineDamper(10);
 		// texture.setReflectivity(1);
