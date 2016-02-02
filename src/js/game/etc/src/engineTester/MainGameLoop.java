@@ -10,6 +10,7 @@ import org.lwjgl.util.vector.Vector3f;
 import js.game.etc.src.entities.Camera;
 import js.game.etc.src.entities.Entity;
 import js.game.etc.src.entities.Light;
+import js.game.etc.src.entities.Player;
 import js.game.etc.src.models.RawModel;
 import js.game.etc.src.models.TexturedModel;
 import js.game.etc.src.objConverter.ModelData;
@@ -56,13 +57,13 @@ public class MainGameLoop {
 				new ModelTexture(loader.loadTexture("grassTexture")));
 		grass.getTexture().setHasTransparency(true);
 		grass.getTexture().setUseFakeLighting(true);
-		
-		//FLOWERS
+
+		// FLOWERS
 		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),
 				new ModelTexture(loader.loadTexture("flower")));
 		flower.getTexture().setHasTransparency(true);
 		flower.getTexture().setUseFakeLighting(true);
-		
+
 		// FERN
 		TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader),
 				new ModelTexture(loader.loadTexture("fern")));
@@ -72,6 +73,14 @@ public class MainGameLoop {
 		TexturedModel lowPolyTree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader),
 				new ModelTexture(loader.loadTexture("lowPolyTree")));
 
+		// PLAYER
+
+		TexturedModel person = new TexturedModel(OBJLoader.loadObjModel("person", loader),
+				new ModelTexture(loader.loadTexture("playerTexture")));
+
+		Player player = new Player(person, new Vector3f(150, 0, -50), 0, 180, 0, 0.7f);
+		Camera camera = new Camera(player);
+
 		// ModelTexture texture = staticModel.getTexture();
 		// texture.setShineDamper(10);
 		// texture.setReflectivity(1);
@@ -79,29 +88,34 @@ public class MainGameLoop {
 		List<Entity> entities = new ArrayList<Entity>();
 		Random random = new Random(676452);
 		for (int i = 0; i < 400; i++) {
-			if( i % 3 == 0){
-			entities.add(new Entity(staticModel,
-					new Vector3f(random.nextFloat() * 800 - 400, 0, random.nextFloat() * -600), 0, 0, 0, random.nextFloat() * 1 + 4));
-			entities.add(new Entity(lowPolyTree,
-					new Vector3f(random.nextFloat() * 800 - 400, 0, random.nextFloat() * -600), 0, random.nextFloat() * 360, 0, random.nextFloat() * 0.1f + 0.6f));
-			entities.add(new Entity(fern, new Vector3f(random.nextFloat() * 400 - 200, 0, random.nextFloat() * -400), 0,
-					random.nextFloat() * 360, 0, 0.6f));
+			if (i % 3 == 0) {
+				entities.add(new Entity(staticModel,
+						new Vector3f(random.nextFloat() * 1000 - 500, 0, random.nextFloat() * -800), 0, 0, 0,
+						random.nextFloat() * 1 + 4));
+				entities.add(new Entity(lowPolyTree,
+						new Vector3f(random.nextFloat() * 1000 - 500, 0, random.nextFloat() * -800), 0,
+						random.nextFloat() * 360, 0, random.nextFloat() * 0.1f + 0.6f));
+				entities.add(
+						new Entity(fern, new Vector3f(random.nextFloat() * 800 - 200, 0, random.nextFloat() * -400), 0,
+								random.nextFloat() * 360, 0, 0.6f));
 			}
-			if (i % 7 == 0){
-			entities.add(new Entity(grass, new Vector3f(random.nextFloat() * 400 - 200, 0, random.nextFloat() * -400),
-					0, 0, 0, 1.8f));
-			entities.add(new Entity(flower, new Vector3f(random.nextFloat() * 400 - 200, 0, random.nextFloat() * -400),
-					0, 0, 0, 2.3f));
+			if (i % 6 == 0) {
+				entities.add(new Entity(grass,
+						new Vector3f(random.nextFloat() * 1000 - 400, 0, random.nextFloat() * -800), 0, 0, 0, 1.8f));
+				entities.add(new Entity(flower,
+						new Vector3f(random.nextFloat() * 1000 - 400, 0, random.nextFloat() * -800), 0, 0, 0, 2.3f));
 			}
 		}
 		Light light = new Light(new Vector3f(20000, 40000, 20000), new Vector3f(1, 1, 1));
-		Camera camera = new Camera();
 
 		Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap);
 		Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap);
 
 		while (!Display.isCloseRequested()) {
 			camera.move();
+			player.move();
+
+			renderer.processEntity(player);
 			renderer.processTerrain(terrain);
 			renderer.processTerrain(terrain2);
 			// renderer.processEntity(entity);

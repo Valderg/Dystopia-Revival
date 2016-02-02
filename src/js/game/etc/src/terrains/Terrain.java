@@ -2,7 +2,6 @@ package js.game.etc.src.terrains;
 
 import js.game.etc.src.models.RawModel;
 import js.game.etc.src.renderEngine.Loader;
-import js.game.etc.src.textures.ModelTexture;
 import js.game.etc.src.textures.TerrainTexture;
 import js.game.etc.src.textures.TerrainTexturePack;
 

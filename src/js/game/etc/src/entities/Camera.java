@@ -1,37 +1,32 @@
 package js.game.etc.src.entities;
 
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
 public class Camera {
 
-	private Vector3f position = new Vector3f(0, 5, 10);
-	private float pitch;
-	private float yaw;
+	private float distanceFromPlayer = 50;
+	private float angleAroundPlayer = 0;
+	
+	
+	private Vector3f position = new Vector3f(100, 35, 50);
+	private float pitch = 10;
+	private float yaw = 0;
 	private float roll;
+	
+	private Player player;
 
-	public Camera() {
+	public Camera(Player player) {
+		this.player = player;
 	}
 
 	public void move() {
-		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			position.z -= 0.5f;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			position.x += 0.5f;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			position.z += 0.5f;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			position.x -= 0.5f;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
-			   position.y+=0.5f;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
-			   position.y-=0.5f;
-		}
+		calculateZoom();
+		calculatePitch();
+		calculateAngleAroundPlayer();
+		float horizDistance = calculateHorizontalDistance();
+		float verticDistance = calculateVerticalDistance();
+		calculateCameraPosition(horizDistance, verticDistance);
 	}
 
 	public Vector3f getPosition() {
@@ -48,6 +43,67 @@ public class Camera {
 
 	public float getRoll() {
 		return roll;
+	}
+	
+	private void calculateCameraPosition(float horizDistance, float verticDistance){
+		float theta = player.getRotY() + angleAroundPlayer;
+		float offsetX = (float) (horizDistance * Math.sin(Math.toRadians(theta)));
+		float offsetZ = (float) (horizDistance * Math.cos(Math.toRadians(theta)));
+		position.x = player.getPosition().x - offsetX;
+		position.z = player.getPosition().z - offsetZ;
+		position.y = player.getCamY() + verticDistance;
+		this.yaw = 180 - (player.getRotY() + angleAroundPlayer);
+		
+	}
+	
+	private float calculateHorizontalDistance(){
+		float hDLimit = (float) (distanceFromPlayer * Math.cos(Math.toRadians(pitch)));
+		if (hDLimit < 0){
+			hDLimit = 0;
+		}
+		return hDLimit;
+	}
+	private float calculateVerticalDistance(){
+		float vDLimit = (float) (distanceFromPlayer * Math.sin(Math.toRadians(pitch)));
+		if (vDLimit < 0){
+			vDLimit = 0;
+		}
+		return vDLimit;
+	}
+	
+	private void calculateZoom(){
+		if(distanceFromPlayer >= 1.5f){
+		float zoomLevel = Mouse.getDWheel() * 0.1f;
+		distanceFromPlayer -= zoomLevel;
+		}else {
+			distanceFromPlayer = 2;
+		}
+		
+		
+	}
+	
+	private void calculatePitch(){
+		if(Mouse.isButtonDown(1)){
+			float rotationChange = Mouse.getDX() * 0.3f;
+			float angleChange = Mouse.getDX() * 0.3f;
+			angleAroundPlayer -= angleChange;
+			player.increaseRotation(0, -rotationChange, 0);
+			float pitchChange = Mouse.getDY() * 0.1f;
+			pitch -= pitchChange;
+//			pitch -= pitchChange;
+			
+			
+		} 
+		
+	}
+	
+	private void calculateAngleAroundPlayer(){
+		if(Mouse.isButtonDown(0)){
+			float angleChange = Mouse.getDX() * 0.3f;
+			angleAroundPlayer -= angleChange;
+			float pitchChange = Mouse.getDY() * 0.1f;
+			pitch -= pitchChange;
+		}
 	}
 
 }
