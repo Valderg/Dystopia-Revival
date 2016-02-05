@@ -1,6 +1,7 @@
 package js.game.etc.src.shaders;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import js.game.etc.src.entities.Camera;
@@ -9,8 +10,8 @@ import js.game.etc.src.toolbox.Maths;
 
 public class StaticShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "src/js/game/etc/src/shaders/vertexShader.txt";
-	private static final String FRAGMENT_FILE = "src/js/game/etc/src/shaders/fragmentShader.txt";
+	private static final String VERTEX_FILE = "js/game/etc/src/shaders/vertexShader.txt";
+	private static final String FRAGMENT_FILE = "js/game/etc/src/shaders/fragmentShader.txt";
 
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
@@ -21,6 +22,8 @@ public class StaticShader extends ShaderProgram {
 	private int location_reflectivity;
 	private int location_useFakeLighting;
 	private int location_skyColor;
+	private int location_numberOfRows;
+	private int location_offset;
 	
 
 	public StaticShader() {
@@ -43,7 +46,17 @@ public class StaticShader extends ShaderProgram {
 		location_reflectivity = super.getUniformLocation("reflectivity");
 		location_useFakeLighting = super.getUniformLocation("useFakeLighting");
 		location_skyColor = super.getUniformLocation("skyColor");
+		location_numberOfRows = super.getUniformLocation("numberOfRows");
+		location_offset = super.getUniformLocation("offset");
 	}
+	
+	public void loadNumberOfRows(int numberOfRows){
+	super.loadFloat(location_numberOfRows, numberOfRows);
+	}
+	
+	public void loadOffset(float x, float y){
+		super.load2DVector(location_offset, new Vector2f(x,y));
+		}
 	
 	public void loadSkyColor(float r, float g, float b){
 		super.loadVector(location_skyColor, new Vector3f(r,g,b));

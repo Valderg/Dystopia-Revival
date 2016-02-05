@@ -2,29 +2,38 @@ package js.game.etc.src.objConverter;
 
 
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.newdawn.slick.util.ResourceLoader;
+
+import js.game.etc.src.renderEngine.OBJLoader;
 
 public class OBJFileLoader {
     
    private static final String RES_LOC = "res/";
+   private static String filePath = "";
+   
 
-   public static ModelData loadOBJ(String objFileName) {
-       FileReader isr = null;
-       File objFile = new File(RES_LOC + objFileName + ".obj");
-       try {
-           isr = new FileReader(objFile);
-       } catch (FileNotFoundException e) {
-           System.err.println("File not found in res; don't use any extention");
-       }
-       BufferedReader reader = new BufferedReader(isr);
+   public static ModelData loadOBJ(String objFileName) {	   
+//       FileReader isr = null;
+//       File objFile = new File(convertStreamToString());
+//       try {
+//           isr = new FileReader(objFile);
+//       } catch (FileNotFoundException e) {
+//           System.err.println("File not found in res; don't use any extention");
+//       }
+ //      BufferedReader reader = new BufferedReader(isr);
+	   InputStream inputStream = null;
+	   inputStream = ResourceLoader.getResourceAsStream(objFileName + ".obj");
+	   BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
        String line;
        List<Vertex> vertices = new ArrayList<Vertex>();
        List<Vector2f> textures = new ArrayList<Vector2f>();
@@ -81,6 +90,8 @@ public class OBJFileLoader {
                furthest);
        return data;
    }
+   
+  
 
    private static void processVertex(String[] vertex, List<Vertex> vertices, List<Integer> indices) {
        int index = Integer.parseInt(vertex[0]) - 1;

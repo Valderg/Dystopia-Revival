@@ -3,13 +3,17 @@ package js.game.etc.src.shaders;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.newdawn.slick.util.ResourceLoader;
 
 public abstract class ShaderProgram {
 
@@ -71,6 +75,9 @@ public abstract class ShaderProgram {
 	protected void loadVector(int location, Vector3f vector) {
 		GL20.glUniform3f(location, vector.x, vector.y, vector.z);
 	}
+	protected void load2DVector(int location, Vector2f vector) {
+		GL20.glUniform2f(location, vector.x, vector.y);
+	}
 
 	protected void loadBoolean(int location, boolean value) {
 		float toLoad = 0;
@@ -88,8 +95,10 @@ public abstract class ShaderProgram {
 
 	private static int loadShader(String file, int type) {
 		StringBuilder shaderSource = new StringBuilder();
+		InputStream inputStream = null;
+		inputStream = ResourceLoader.getResourceAsStream(file);
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(file));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				shaderSource.append(line).append("\n");

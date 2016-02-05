@@ -1,11 +1,16 @@
 package js.game.etc.src.engineTester;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
+import org.newdawn.slick.util.ResourceLoader;
 
 import js.game.etc.src.entities.Camera;
 import js.game.etc.src.entities.Entity;
@@ -25,12 +30,14 @@ import js.game.etc.src.textures.TerrainTexture;
 import js.game.etc.src.textures.TerrainTexturePack;
 
 public class MainGameLoop {
+	
+	
 
 	public static void main(String[] args) {
 
+		
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
-
 		// ***************TERRAIN TEXTURE PACK CREATION***************
 
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
@@ -40,46 +47,58 @@ public class MainGameLoop {
 
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
-
+		TerrainTexture mountainBlendMap = new TerrainTexture(loader.loadTexture("mountainsBlendMap"));
+		TerrainTexture mountainsBlendMapFlippedL = new TerrainTexture(loader.loadTexture("mountainsBlendMapFlipped"));
 		// ***********************************************************
+		
 		MasterRenderer renderer = new MasterRenderer();
 
 		// TREE
 		ModelData data = OBJFileLoader.loadOBJ("tree");
 
-		RawModel treeModel = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(),
+		RawModel model = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(),
 				data.getIndices());
 
-		TexturedModel staticModel = new TexturedModel(treeModel, new ModelTexture(loader.loadTexture("tree")));
+		TexturedModel staticModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("tree")));
 
 		// GRASS
-		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),
-				new ModelTexture(loader.loadTexture("grassTexture")));
+		data = OBJFileLoader.loadOBJ("grassModelTEST");
+		model = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(),
+					data.getIndices());
+		TexturedModel grass = new TexturedModel(model, new ModelTexture(loader.loadTexture("grassTexture")));
 		grass.getTexture().setHasTransparency(true);
 		grass.getTexture().setUseFakeLighting(true);
 
 		// FLOWERS
-		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),
-				new ModelTexture(loader.loadTexture("flower")));
+		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModelTEST", loader),
+				new ModelTexture(loader.loadTexture("vegetation")));
 		flower.getTexture().setHasTransparency(true);
 		flower.getTexture().setUseFakeLighting(true);
+		flower.getTexture().setNumberOfRows(2);
 
 		// FERN
-		TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader),
-				new ModelTexture(loader.loadTexture("fern")));
+		data = OBJFileLoader.loadOBJ("fern");
+		model = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(),
+					data.getIndices());
+		TexturedModel fern = new TexturedModel(model, new ModelTexture(loader.loadTexture("fern")));
 		fern.getTexture().setHasTransparency(true);
+		fern.getTexture().setNumberOfRows(2);;
 
 		// LOW POLY TREE
-		TexturedModel lowPolyTree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader),
-				new ModelTexture(loader.loadTexture("lowPolyTree")));
+		data = OBJFileLoader.loadOBJ("lowPolyTree");
+		model = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(),
+					data.getIndices());
+		TexturedModel lowPolyTree = new TexturedModel(model, new ModelTexture(loader.loadTexture("lowPolyTree")));
 
 		// PLAYER
 
-		TexturedModel person = new TexturedModel(OBJLoader.loadObjModel("person", loader),
-				new ModelTexture(loader.loadTexture("playerTexture")));
+		ModelData playerData = OBJFileLoader.loadOBJ("HumanMale");
+		RawModel playerModel = loader.loadToVAO(playerData.getVertices(), playerData.getTextureCoords(), playerData.getNormals(),
+				playerData.getIndices());
+		TexturedModel person = new TexturedModel(playerModel, new ModelTexture(loader.loadTexture("HumanMale")));
 
-		Player player = new Player(person, new Vector3f(1200, 0, -50), 0, 180, 0, 0.7f);
-		Camera camera = new Camera(player);
+
+		
 
 		// ModelTexture texture = staticModel.getTexture();
 		// texture.setShineDamper(10);
@@ -90,20 +109,24 @@ public class MainGameLoop {
 		List<Terrain> terrainList = new ArrayList<Terrain>();
 		Terrain[][] terrains = new Terrain[3][3];
 
-		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "heightmap");
-		Terrain terrain2 = new Terrain(1, -1, loader, texturePack, blendMap, "heightmap");
-		Terrain terrain3 = new Terrain(2, -1, loader, texturePack, blendMap, "heightmap");
+		Terrain terrain = new Terrain(0, -1, loader, texturePack, mountainsBlendMapFlippedL, "mountainsHeightMapFlipped", 40);
+		Terrain terrain2 = new Terrain(1, -1, loader, texturePack, mountainBlendMap, "mountainsHeightMap", 40);
+		Terrain terrain3 = new Terrain(2, -1, loader, texturePack, blendMap, "heightmap", 40);
 		terrainList.add(terrain);
 		terrainList.add(terrain2);
 		terrainList.add(terrain3);
 		terrains[0][0] = terrain;
 		terrains[1][0] = terrain2;
 		terrains[2][0] = terrain3;
+		
+		
+		Player player = new Player(person, new Vector3f(810, 0, -50), 0, 180, 0, 1);
+		Camera camera = new Camera(player);
 
 		Random random = new Random(676452);
 
-		for (int i = 0; i < 400; i++) {
-
+		for (int i = 0; i < 600; i++) {
+			
 			if (i % 1 == 0) {
 				float x = random.nextFloat() * 2400 - 400;
 				float z = random.nextFloat() * -600;
@@ -111,10 +134,10 @@ public class MainGameLoop {
 				int gridZ = (int) (z / 800);
 				Terrain currentTerrain = terrains[gridX][gridZ];
 				float y = currentTerrain.getHeightOfTerrain(x, z);
-				entities.add(new Entity(fern, new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, 0.6f));
-			}
+				entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, 0.6f));
+				}
 
-			if (i % 5 == 0) {
+			if (i % 2.5f == 0) {
 				float x = random.nextFloat() * 2400;
 				float z = random.nextFloat() * -600;
 				int gridX = (int) (x / 800);
@@ -133,26 +156,33 @@ public class MainGameLoop {
 						random.nextFloat() * 0.1f + 0.6f));
 
 			}
-			// if (i % 3 == 0) {
-			// float x = random.nextFloat() * 2400;
-			// float z = random.nextFloat() * -600;
-			// int gridX = (int) (x / 800);
-			// int gridZ = (int) (z / 800);
-			// Terrain currentTerrain = terrains[gridX][gridZ];
-			// float y = currentTerrain.getHeightOfTerrain(x, z);
-			// entities.add(new Entity(grass, new Vector3f(x, y, z), 0, 0, 0,
-			// 1.8f));
-			//
-			// x = random.nextFloat() * 2400;
-			// z = random.nextFloat() * -600;
-			// gridX = (int) (x / 800);
-			// gridZ = (int) (z / 800);
-			// currentTerrain = terrains[gridX][gridZ];
-			// y = currentTerrain.getHeightOfTerrain(x, z);
-			// entities.add(new Entity(flower, new Vector3f(x, y, z), 0, 0, 0,
-			// 2.3f));
-			// }
+			int vegetation = 10;
+			 while (vegetation > 1) {
+			 float x = random.nextFloat() * 2400;
+			 float z = random.nextFloat() * -600;
+			 int gridX = (int) (x / 800);
+			 int gridZ = (int) (z / 800);
+			 Terrain currentTerrain = terrains[gridX][gridZ];
+			 float y = currentTerrain.getHeightOfTerrain(x, z);
+			 entities.add(new Entity(grass, new Vector3f(x, y, z), 0, 0, 0,
+			 1.8f));
+			 
+			 if (vegetation > 5) {
+				 x = random.nextFloat() * 2400;
+				 z = random.nextFloat() * -600;
+				 gridX = (int) (x / 800);
+				 gridZ = (int) (z / 800);
+				 currentTerrain = terrains[gridX][gridZ];
+				 y = currentTerrain.getHeightOfTerrain(x, z);
+				 entities.add(new Entity(flower, random.nextInt(2), new Vector3f(x, y, z), 0, 0, 0,
+				 2.3f));
+				 }
+			 --vegetation;
+			 }
+			 
+			
 		}
+		
 		Light light = new Light(new Vector3f(20000, 40000, 20000), new Vector3f(1, 1, 1));
 
 		while (!Display.isCloseRequested()) {

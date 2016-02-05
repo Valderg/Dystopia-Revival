@@ -12,7 +12,7 @@ public class Player extends Entity{
 	public static final float RUN_SPEED = 20;
 	private static final float TURN_SPEED = 160;
 	private static final float GRAVITY = -50;
-	private static final float JUMP_POWER = 30;
+	private static final float JUMP_POWER = 20;
 	
 	
 	private float currentSpeed = 0;
@@ -34,10 +34,13 @@ public class Player extends Entity{
 		super.increasePosition(dx, 0, dz);
 		upwardsSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
 		super.increasePosition(0, upwardsSpeed * DisplayManager.getFrameTimeSeconds(), 0);
-		float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
+		float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x , super.getPosition().z);
 		if(super.getPosition().y<terrainHeight){
 			upwardsSpeed = 0;
 			isInAir = false;
+			super.getPosition().y = terrainHeight ;
+		}else if(super.getPosition().y > terrainHeight && isInAir == false){
+			upwardsSpeed = 0;
 			super.getPosition().y = terrainHeight;
 		}
 	}
@@ -50,12 +53,25 @@ public class Player extends Entity{
 		this.currentTurnSpeed = currentTurnSpeed;
 	}
 
+	public float getCurrentSpeed() {
+		return currentSpeed;
+	}
+
+	public void setCurrentSpeed(float currentSpeed) {
+		this.currentSpeed = currentSpeed;
+	}
+
+	public static float getRunSpeed() {
+		return RUN_SPEED;
+	}
+
 	private void jump(){
 		if (!isInAir){
 		this.upwardsSpeed = JUMP_POWER;
 		isInAir = true;
 		}
 	}
+	
 	private void checkInputs(){
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			currentSpeed = RUN_SPEED;

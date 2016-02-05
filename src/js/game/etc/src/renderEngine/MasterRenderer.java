@@ -20,7 +20,7 @@ import js.game.etc.src.terrains.Terrain;
 public class MasterRenderer {
 
 	private static final float FOV = 70;
-	private static final float NEAR_PLANE = 0.1f;
+	private static final float NEAR_PLANE = 0.4f;
 	private static final float FAR_PLANE = 1000f;
 
 	private static final float RED = 0.5f;

@@ -9,8 +9,8 @@ import js.game.etc.src.toolbox.Maths;
 
 public class TerrainShader extends ShaderProgram{
 
-	private static final String VERTEX_FILE = "src/js/game/etc/src/shaders/terrainVertexShader.txt";
-	private static final String FRAGMENT_FILE = "src/js/game/etc/src/shaders/terrainFragmentShader.txt";
+	private static final String VERTEX_FILE = "js/game/etc/src/shaders/terrainVertexShader.txt";
+	private static final String FRAGMENT_FILE = "js/game/etc/src/shaders/terrainFragmentShader.txt";
 
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
@@ -60,6 +60,7 @@ public class TerrainShader extends ShaderProgram{
 		super.loadInt(location_gTexture, 2);
 		super.loadInt(location_bTexture, 3);
 		super.loadInt(location_blendMap, 4);
+		System.out.println("Loaded Blend Map Location!");
 	}
 	
 	public void loadSkyColor(float r, float g, float b){
