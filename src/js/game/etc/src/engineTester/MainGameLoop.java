@@ -1,21 +1,19 @@
 package js.game.etc.src.engineTester;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javax.imageio.ImageIO;
-
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
-import org.newdawn.slick.util.ResourceLoader;
 
 import js.game.etc.src.entities.Camera;
 import js.game.etc.src.entities.Entity;
 import js.game.etc.src.entities.Light;
 import js.game.etc.src.entities.Player;
+import js.game.etc.src.gui.GuiRenderer;
+import js.game.etc.src.gui.GuiTexture;
 import js.game.etc.src.models.RawModel;
 import js.game.etc.src.models.TexturedModel;
 import js.game.etc.src.objConverter.ModelData;
@@ -51,8 +49,11 @@ public class MainGameLoop {
 		TerrainTexture mountainsBlendMapFlippedL = new TerrainTexture(loader.loadTexture("mountainsBlendMapFlipped"));
 		// ***********************************************************
 		
+		// ***************ALL RENDERERS***************
 		MasterRenderer renderer = new MasterRenderer();
-
+		GuiRenderer guiRenderer = new GuiRenderer(loader);
+		// *******************************************
+		
 		// TREE
 		ModelData data = OBJFileLoader.loadOBJ("tree");
 
@@ -104,6 +105,10 @@ public class MainGameLoop {
 		// texture.setShineDamper(10);
 		// texture.setReflectivity(1);
 
+		List<GuiTexture> guis = new ArrayList<GuiTexture>();
+		GuiTexture logo = new GuiTexture(loader.loadTexture("logo"), new Vector2f(0.9f, 0.7f), new Vector2f(0.25f, 0.25f));
+		guis.add(logo);
+		
 		List<Entity> entities = new ArrayList<Entity>();
 		List<Entity> trees = new ArrayList<Entity>();
 		List<Terrain> terrainList = new ArrayList<Terrain>();
@@ -191,7 +196,6 @@ public class MainGameLoop {
 			Terrain currentTerrain = terrains[gridX][gridZ];
 			player.move(currentTerrain);
 			camera.move();
-
 			renderer.processEntity(player);
 			for (Terrain terrainsToRender : terrainList) {
 				renderer.processTerrain(terrainsToRender);
@@ -207,8 +211,11 @@ public class MainGameLoop {
 				renderer.processEntity(tree);
 			}
 			renderer.render(light, camera);
+			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();
 		}
+		
+		guiRenderer.cleanUp();
 		renderer.cleanUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
